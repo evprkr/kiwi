@@ -2,21 +2,28 @@ import lexer
 import os, sys
 
 def exit_shell():
-	sys.exit(0);
+    sys.exit(0);
 
-def clear_shell():
-	os.system('clear')
-	print("\nKiwi Shell v0.0.1")
+if str(sys.argv[1]) == '-c': os.system('clear')
 
+print(r"""
+   ,--.,--.
+  (  . \   \
+  //_   `   |
+ /' |       |
+'    \      ;
+   __|`--\,/ 
+    /\    |
+         ~|~""")
 print("\nKiwi Shell v0.0.1")
 
 while True:
-	text = input('~ ')
+    text = input('~ ')
 
-	if text == 'exit': exit_shell()
-	if text == 'clear': clear_shell() # throws an illegal character error
+    if text == 'exit': exit_shell()
+    if text == 'clear': clear_shell() # throws an illegal character error
 
-	result, error = lexer.run(text)
+    result, error = lexer.run('$FILE', text)
 
-	if error: print(error.as_string())
-	else: print(result)
+    if error: print(error.as_string())
+    else: print(result)

@@ -3,8 +3,7 @@ Kiwi is just a pet project of mine that I'm working on while I learn about progr
 
 ### Features
 Kiwi is currently extremely barebones, so below is a list of features that have been implemented:
-* Basic lexing for numbers and mathematical operators
-* Number conversion to floats or integers
+* Basic lexing for numbers and mathematical operators. Not actual math, just lexing of math!
 
 ### Code Examples
 FizzBuzz sequence
