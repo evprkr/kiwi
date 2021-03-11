@@ -1,51 +1,33 @@
 class Token:
-	def __init__(self, type_, value=None):
-		self.type = type_
-		self.value = value
+    def __init__(self, type_, val=None):
+        self.type = type_
+        self.val = val
 
-	def __repr__(self):
-		if self.value: return f'{self.type}:{self.value}'
-		return f'{self.type}'
+    def __repr__(self):
+        if self.val: return f'{self.type}:{self.val}'
+        else: return f'{self.type}'
 
-# KEYWORDS
-T_NONE = 'NONE'
-T_TRUE = 'TRUE'
-T_FALSE = 'FALSE'
-T_IF = 'IF'
-T_ELSE = 'ELSE'
-T_ELIF = 'ELIF'
-T_AND = 'AND'
-T_OR = 'OR'
-T_PASS = 'PASS'
-T_CLASS = 'CLASS'
-T_FUNC = 'FUNC'
-T_FOR = 'FOR'
-T_WHILE = 'WHILE'
-T_BREAK = 'BREAK'
-T_TRY = 'TRY'
-T_EXCEPT = 'EXCEPT'
-T_REQUIRE = 'REQUIRE'
-
-# NUMBER TOKENS
-T_INT = 'INT'
-T_FLOAT = 'FLOAT'
+# DATA TYPES
+T_INT =         'INT'
+T_FLOAT =       'FLOAT'
+T_STRING =      'STRING'
 
 # MATH OPERATORS
-T_PLUS = 'PLUS'
-T_MINUS = 'MINUS'
-T_STAR = 'STAR'
-T_SLASH = 'SLASH'
-T_MODULO = 'MODULO'
+T_PLUS =        'PLUS'
+T_MINUS =       'MINUS'
+T_STAR =        'STAR'
+T_SLASH =       'SLASH'
+T_MODULO =      'MODULO'
 
 # DELIMITERS
-T_LPAREN = 'LPAREN'
-T_RPAREN = 'RPAREN'
+T_LPAREN =      'LPAREN'
+T_RPAREN =      'RPAREN'
 
 # RELATIONAL OPERATORS
-T_EQUAL = 'EQUAL'
-T_EQEQUAL = 'EQEQUAL'
-T_NOTEQUAL = 'NOTEQUAL'
-T_LESSTHAN = 'LESSTHAN'
-T_GREATERTHAN = 'GREATERTHAN'
-T_LESSEQUAL = 'LESSEQUAL'
-T_GREATEREQUAL = 'GREATEREQUAL'
+T_EQUAL =       'EQUAL'
+T_EQEQUAL =     'EQEQUAL'
+T_NOTEQUAL =    'NOTEQUAL'
+T_LESSTHAN =    'LESSTHAN'
+T_GREATTHAN =   'GREATTHAN'
+T_LESSEQUAL =   'LESSEQUAL'
+T_GREATEQUAL =  'GREATEQUAL'

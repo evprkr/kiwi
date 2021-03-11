@@ -1,10 +1,7 @@
-import lexer
+import lexer, parser
 import os, sys
 
-def exit_shell():
-    sys.exit(0);
-
-if str(sys.argv[1]) == '-c': os.system('clear')
+if len(sys.argv) > 1 and str(sys.argv[1]) == '-c': os.system('clear')
 
 print(r"""
    ,--.,--.
@@ -12,18 +9,16 @@ print(r"""
   //_   `   |
  /' |       |
 '    \      ;
-   __|`--\,/ 
+   __|`--\,/
     /\    |
          ~|~""")
-print("\nKiwi Shell v0.0.1")
+print("\nKiwi Shell v0.0.2")
 
 while True:
     text = input('~ ')
-
-    if text == 'exit': exit_shell()
-    if text == 'clear': clear_shell() # throws an illegal character error
-
     result, error = lexer.run('$FILE', text)
 
+    if text == 'exit': sys.exit(0)
+
     if error: print(error.as_string())
-    else: print(result)
+    else: print(f"\n{result}")
