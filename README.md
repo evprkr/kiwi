@@ -7,6 +7,7 @@ Kiwi is currently extremely barebones, so below is a list of features that have 
 
 ### Code Examples
 This is an example of the (future) syntax of Kiwi, which is still subject to change. The goal is to make it extremely easy to read, write, and understand.
+
 	// Print FizzBuzz sequence
 	for i to 100 >>
 		if i % 15 is 0 >> say "FizzBuzz"
