@@ -14,6 +14,7 @@ This is an example of the (future) syntax of Kiwi, which is still subject to cha
 		elif i % 3 is 0 >> say "Fizz"
 		elif i % 5 is 0 >> say "Buzz"
 		else >> say i
+		
 
 	// Convert fahrenheit to celsius
 		x = ask "What is the temperature today in F?"
