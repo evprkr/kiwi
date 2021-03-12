@@ -1,7 +1,14 @@
 class Token:
-    def __init__(self, type_, val=None):
+    def __init__(self, type_, val=None, pos_start=None, pos_end=None):
         self.type = type_
         self.val = val
+
+        if pos_start:
+            self.pos_start = pos_start.copy()
+            self.pos_end = pos_start.copy()
+            self.pos_end.adv()
+
+        if pos_end: self.pos_end = pos_end
 
     def __repr__(self):
         if self.val: return f'{self.type}:{self.val}'
@@ -31,3 +38,6 @@ T_LESSTHAN =    'LESSTHAN'
 T_GREATTHAN =   'GREATTHAN'
 T_LESSEQUAL =   'LESSEQUAL'
 T_GREATEQUAL =  'GREATEQUAL'
+
+# OTHER
+T_EOF =         'EOF'

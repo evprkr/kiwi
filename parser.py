@@ -1,4 +1,5 @@
 from tokens import *
+from errors import *
 from lexer import *
 
 # NODES
@@ -35,11 +36,11 @@ class ParseResult:
             return res.node
         return res
 
-    def pass(self, node):
+    def success(self, node):
         self.node = node
         return self
 
-    def fail(self, error):
+    def failure(self, error):
         self.error = error
         return self
 
@@ -55,3 +56,59 @@ class Parser:
         if self.t_index < len(self.tokens):
             self.token = self.tokens[self.t_index]
         return self.token
+
+    def parse(self):
+        res = self.expr()
+        if not res.error and self.token.type != T_EOF:
+            return res.failure(InvalidSyntaxError(
+                self.token.pos_start, self.token.pos_end,
+                "Expected mathematical operator"))
+        return res
+
+    # FACTOR
+    def factor(self):
+        res = ParseResult()
+        token = self.token
+
+        if token.type in (T_PLUS, T_MINUS):
+            res.register(self.adv())
+            factor = res.register(self.factor())
+            if res.error: return res
+            else: return res.success(UnaryOpNode(token, factor))
+
+        elif token.type in (T_INT, T_FLOAT):
+            res.register(self.adv())
+            return res.success(NumberNode(token))
+
+        elif token.type in (T_LPAREN):
+            res.register(self.adv())
+            expr = res.register(self.expr())
+            if res.error: return res
+            if self.token.type == T_RPAREN:
+                res.register(self.adv())
+                return res.success(expr)
+            else:
+                return res.failure(InvalidSyntaxError(
+                    self.token.pos_start, self.token.pos_end,
+                    "Expected ')'"))
+
+        return res.failure(InvalidSyntaxError(
+            token.pos_start, token.pos_end,
+            "Expected INT or FLOAT"))
+
+    def term(self): return self.binary_op(self.factor, (T_STAR, T_SLASH))
+    def expr(self): return self.binary_op(self.term, (T_PLUS, T_MINUS))
+
+    def binary_op(self, func, ops):
+        res = ParseResult()
+        left = res.register(func())
+        if res.error: return res
+
+        while self.token.type in ops:
+            op_token = self.token
+            res.register(self.adv())
+            right = res.register(func())
+            if res.error: return res
+            else: left = BinaryOpNode(left, op_token, right)
+
+        return res.success(left)

@@ -1,4 +1,4 @@
-import lexer, parser
+import lexer, parser, errors
 import os, sys
 
 if len(sys.argv) > 1 and str(sys.argv[1]) == '-c': os.system('clear')
