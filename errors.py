@@ -8,11 +8,11 @@ class Error:
 
     def as_string(self):
         error_msg = f"{self.error}: {self.details}"
-        error_msg += f" in file {self.pos_start.fname}, at line {self.pos_start.ln + 1}\n"
+        error_msg += f" in {self.pos_start.fname}, at line {self.pos_start.ln + 1}\n"
         return error_msg
 
 class IllegalCharError(Error):
-    def __init__(self, pos_start, pos_end, details=''):
+    def __init__(self, pos_start, pos_end, details):
         super().__init__(pos_start, pos_end, 'Illegal Character', details)
 
 class InvalidSyntaxError(Error):

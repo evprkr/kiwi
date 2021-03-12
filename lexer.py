@@ -45,14 +45,14 @@ class Lexer:
         while self.char != None:
             if self.char in ' ': self.adv()
             elif self.char in NUMBERS: tokens.append(self.make_number());
-            elif self.char == '+': tokens.append(Token(T_PLUS)); self.adv()
-            elif self.char == '-': tokens.append(Token(T_MINUS)); self.adv()
-            elif self.char == '*': tokens.append(Token(T_STAR)); self.adv()
-            elif self.char == '/': tokens.append(Token(T_SLASH)); self.adv()
-            elif self.char == '(': tokens.append(Token(T_LPAREN)); self.adv()
-            elif self.char == ')': tokens.append(Token(T_RPAREN)); self.adv()
+            elif self.char == '+': tokens.append(Token(T_PLUS, pos_start = self.pos)); self.adv()
+            elif self.char == '-': tokens.append(Token(T_MINUS, pos_start = self.pos)); self.adv()
+            elif self.char == '*': tokens.append(Token(T_STAR, pos_start = self.pos)); self.adv()
+            elif self.char == '/': tokens.append(Token(T_SLASH, pos_start = self.pos)); self.adv()
+            elif self.char == '(': tokens.append(Token(T_LPAREN, pos_start = self.pos)); self.adv()
+            elif self.char == ')': tokens.append(Token(T_RPAREN, pos_start = self.pos)); self.adv()
             elif self.char == '"': tokens.append(self.make_string()); self.adv()
-            else: return [], IllegalCharError(self.pos.copy(), self.pos, "'" + self.char + "'") 
+            else: return [], IllegalCharError(self.pos.copy(), self.pos, "'" + self.char + "'")
 
         tokens.append(Token(T_EOF, pos_start=self.pos))
         return tokens, None
@@ -60,6 +60,7 @@ class Lexer:
     def make_number(self):
         number = ''
         decimals = 0
+        pos_start = self.pos.copy()
 
         while self.char != None and self.char in NUMBERS + '.':
             if self.char == '.':
@@ -70,11 +71,12 @@ class Lexer:
                 number += self.char
             self.adv()
 
-        if decimals == 0: return Token(T_INT, int(number))
-        else: return Token(T_FLOAT, float(number))
+        if decimals == 0: return Token(T_INT, int(number), pos_start, self.pos)
+        return Token(T_FLOAT, float(number), pos_start, self.pos)
 
     def make_string(self):
         string = '"'
+        pos_start = self.pos.copy()
         self.adv()
 
         while self.char != None and self.char != '"':
@@ -82,16 +84,17 @@ class Lexer:
             self.adv()
 
         string += '"'
-        return Token(T_STRING, string)
+        return Token(T_STRING, string, pos_start, self.pos)
 
 # RUN LEXER
 def run(fname, text):
     # Generate tokens from raw code
     lexer = Lexer(fname, text)
     tokens, error = lexer.tokenize()
+    if error: return None, error
 
     # Generate AST from tokens
     parser = Parser(tokens)
     ast = parser.parse()
 
-    return tokens, error
+    return ast.node, ast.error

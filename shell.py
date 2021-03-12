@@ -21,4 +21,4 @@ while True:
     if text == 'exit': sys.exit(0)
 
     if error: print(error.as_string())
-    else: print(f"\n{result}")
+    else: print(f"{result}\n")

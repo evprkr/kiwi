@@ -16,6 +16,9 @@ class BinaryOpNode:
         self.op_token = op_token
         self.right_node = right_node
 
+    def __repr__(self):
+        return f'({self.left_node}, {self.op_token}, {self.right_node})'
+
 class UnaryOpNode:
     def __init__(self, op_token, node):
         self.op_token = op_token
@@ -74,7 +77,7 @@ class Parser:
             res.register(self.adv())
             factor = res.register(self.factor())
             if res.error: return res
-            else: return res.success(UnaryOpNode(token, factor))
+            return res.success(UnaryOpNode(token, factor))
 
         elif token.type in (T_INT, T_FLOAT):
             res.register(self.adv())
