@@ -18,3 +18,25 @@ class IllegalCharError(Error):
 class InvalidSyntaxError(Error):
     def __init__(self, pos_start, pos_end, details=''):
         super().__init__(pos_start, pos_end, 'Invalid Syntax', details)
+
+class RuntimeError(Error):
+    def __init__(self, pos_start, pos_end, details, context):
+        super().__init__(pos_start, pos_end, 'Runtime Error', details)
+        self.context = context
+
+    def as_string(self):
+        error_msg = self.generate_traceback()
+        error_msg += f"{self.error}: {self.details}\n"
+        return error_msg
+
+    def generate_traceback(self):
+        result = ''
+        pos = self.pos_start
+        context = self.context
+
+        while context:
+            result = f"    File {pos.fname}, at line {pos.ln + 1} in {context.display_name}\n" + result
+            pos = context.parent_entry_pos
+            context = context.parent
+
+        return "Traceback (most recent call last):\n" + result
