@@ -3,7 +3,8 @@ Kiwi is just a pet project of mine that I'm working on while I learn about progr
 
 ### Features
 Kiwi is currently extremely barebones, so below is a list of features that have been implemented:
-* Basic lexing for numbers and mathematical operators. Not actual math, just lexing of math!
+* Basic lexing, parsing, and interpreting of mathematical functions
+* Errors for illegal characters, invalid syntax, and runtime errors (with tracebacks!)
 
 ### Code Examples
 This is an example of the (future) syntax of Kiwi, which is still subject to change. The goal is to make it extremely easy to read, write, and understand.
@@ -15,7 +16,7 @@ This is an example of the (future) syntax of Kiwi, which is still subject to cha
 		elif i % 5 is 0 >> say "Buzz"
 		else >> say i
 		
-<br>
+&nbsp;
 
 	// Convert fahrenheit to celsius
 		x = ask "What is the temperature today in F?"
