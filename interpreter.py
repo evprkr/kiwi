@@ -59,6 +59,10 @@ class Number:
 
             return Number(self.value / other.value).set_context(self.context), None
 
+    def math_power(self, other):
+        if isinstance(other, Number):
+            return Number(self.value ** other.value).set_context(self.context), None
+
     def __repr__(self):
         return str(self.value)
 
@@ -98,6 +102,10 @@ class Interpreter:
             result, error = left.math_multiply(right)
         elif node.op_token.type == T_SLASH:
             result, error = left.math_divide(right)
+        elif node.op_token.type == T_POW:
+            result, error = left.math_power(right)
+        elif node.op_token.type == T_MOD:
+            result, error = left.math_modulo(right)
 
         if error: return res.failure(error)
         else: return res.success(result.set_pos(node.pos_start, node.pos_end))

@@ -11,7 +11,7 @@ class Token:
         if pos_end: self.pos_end = pos_end
 
     def __repr__(self):
-        if self.val: return f'{self.type}:{self.val}'
+        if self.value: return f'{self.type}:{self.value}'
         else: return f'{self.type}'
 
 # DATA TYPES
@@ -24,7 +24,7 @@ T_PLUS =        'PLUS'
 T_MINUS =       'MINUS'
 T_STAR =        'STAR'
 T_SLASH =       'SLASH'
-T_MODULO =      'MODULO'
+T_POW =         'POW'
 
 # DELIMITERS
 T_LPAREN =      'LPAREN'

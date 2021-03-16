@@ -50,6 +50,7 @@ class Lexer:
             elif self.char == '-': tokens.append(Token(T_MINUS, pos_start = self.pos)); self.adv()
             elif self.char == '*': tokens.append(Token(T_STAR, pos_start = self.pos)); self.adv()
             elif self.char == '/': tokens.append(Token(T_SLASH, pos_start = self.pos)); self.adv()
+            elif self.char == '^': tokens.append(Token(T_POW, pos_start = self.pos)); self.adv()
             elif self.char == '(': tokens.append(Token(T_LPAREN, pos_start = self.pos)); self.adv()
             elif self.char == ')': tokens.append(Token(T_RPAREN, pos_start = self.pos)); self.adv()
             elif self.char == '"': tokens.append(self.make_string()); self.adv()

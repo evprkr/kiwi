@@ -78,22 +78,16 @@ class Parser:
                 "Expected mathematical operator"))
         return res
 
-    # FACTOR
-    def factor(self):
+    # MATHEMATICAL OPERATIONS
+    def atom(self):
         res = ParseResult()
         token = self.token
 
-        if token.type in (T_PLUS, T_MINUS):
-            res.register(self.adv())
-            factor = res.register(self.factor())
-            if res.error: return res
-            return res.success(UnaryOpNode(token, factor))
-
-        elif token.type in (T_INT, T_FLOAT):
+        if token.type in (T_INT, T_FLOAT):
             res.register(self.adv())
             return res.success(NumberNode(token))
 
-        elif token.type in (T_LPAREN):
+        elif token.type == T_LPAREN:
             res.register(self.adv())
             expr = res.register(self.expr())
             if res.error: return res
@@ -107,20 +101,38 @@ class Parser:
 
         return res.failure(InvalidSyntaxError(
             token.pos_start, token.pos_end,
-            "Expected INT or FLOAT"))
+            "Expected INT, FLOAT, or mathematical operator"))
+
+
+    def power(self): return self.binary_op(self.atom, (T_POW, ), self.factor)
+
+    def factor(self):
+        res = ParseResult()
+        token = self.token
+
+        if token.type in (T_PLUS, T_MINUS):
+            res.register(self.adv())
+            factor = res.register(self.factor())
+            if res.error: return res
+            return res.success(UnaryOpNode(token, factor))
+
+        return self.power()
 
     def term(self): return self.binary_op(self.factor, (T_STAR, T_SLASH))
     def expr(self): return self.binary_op(self.term, (T_PLUS, T_MINUS))
 
-    def binary_op(self, func, ops):
+    def binary_op(self, func_a, ops, func_b=None):
+        if func_b == None:
+            func_b = func_a
+
         res = ParseResult()
-        left = res.register(func())
+        left = res.register(func_a())
         if res.error: return res
 
         while self.token.type in ops:
             op_token = self.token
             res.register(self.adv())
-            right = res.register(func())
+            right = res.register(func_b())
             if res.error: return res
             else: left = BinaryOpNode(left, op_token, right)
 
