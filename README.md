@@ -1,5 +1,5 @@
 # Kiwi
-Kiwi is just a pet project of mine that I'm working on while I learn about programming language design. It's a small language written and interpreted into Python code. The goal I have in mind is to make the language extremely simple to read, write, and understand. You can clone the repo to your computer, then run ``shell.py`` to play with Kiwi!
+Kiwi is just a pet project of mine that I'm working on while I learn about programming language design. It's a small language written and interpreted into Python code. The goal I have in mind is to make the language extremely simple to read, write, and understand, even for total beginners. You can clone the repo to your computer, then run ``shell.py`` to test it out!
 
 ### Features
 Kiwi is currently extremely barebones, so below is a list of features that have been implemented:
