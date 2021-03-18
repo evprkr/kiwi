@@ -19,13 +19,6 @@ def help_text():
     print("Perform basic operations right from the shell, or execute Kiwi scripts (.kw files) by passing the file name (with extension) to the shell.", end=' ')
     print("You can run Kiwi scripts from outside the Kiwi shell with the command 'kiwi MyScript.kw'\n")
 
-shell_commands = [
-    ['kiwi', run_program],
-    ['exit', exit_shell],
-    ['about', about_kiwi],
-    ['help', help_text]
-]
-
 # SHELL ENTER
 if len(sys.argv) > 1 and str(sys.argv[1]) == '-c': os.system('clear')
 
@@ -42,14 +35,9 @@ print(f"\nKiwi Shell v{version}")
 
 while True:
     text = input('~ ')
+    
+    if text == 'exit': exit_shell()
+    else: result, error = lexer.run('$FILE', text)
 
-    for i in range(len(shell_commands)):
-        if text in shell_commands[i][0]:
-            func = shell_commands[i][1]
-            func()
-            break
-    else:
-        result, error = lexer.run('$FILE', text)
-
-        if error: print(error.as_string())
-        else: print(f"{result}\n")
+    if error: print(error.as_string())
+    else: print(f"{result}\n")

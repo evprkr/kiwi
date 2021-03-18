@@ -1,10 +1,15 @@
+# IMPORTS
 from tokens import *
 from errors import *
 from parser import *
 from interpreter import *
 
+import string
+
 # CONSTANTS
+ALPHAS = string.ascii_letters
 NUMBERS = '0123456789'
+ALPHANUMERIC = ALPHAS + NUMBERS
 
 # POSITION
 class Position:
@@ -45,12 +50,14 @@ class Lexer:
 
         while self.char != None:
             if self.char in ' ': self.adv()
-            elif self.char in NUMBERS: tokens.append(self.make_number());
+            elif self.char in NUMBERS: tokens.append(self.make_number())
+            elif self.char in ALPHAS: tokens.append(self.make_identifier())
             elif self.char == '+': tokens.append(Token(T_PLUS, pos_start = self.pos)); self.adv()
             elif self.char == '-': tokens.append(Token(T_MINUS, pos_start = self.pos)); self.adv()
             elif self.char == '*': tokens.append(Token(T_STAR, pos_start = self.pos)); self.adv()
             elif self.char == '/': tokens.append(Token(T_SLASH, pos_start = self.pos)); self.adv()
             elif self.char == '^': tokens.append(Token(T_POW, pos_start = self.pos)); self.adv()
+            elif self.char == '=': tokens.append(Token(T_EQUAL, pos_start = self.pos)); self.adv()
             elif self.char == '(': tokens.append(Token(T_LPAREN, pos_start = self.pos)); self.adv()
             elif self.char == ')': tokens.append(Token(T_RPAREN, pos_start = self.pos)); self.adv()
             elif self.char == '"': tokens.append(self.make_string()); self.adv()
@@ -76,19 +83,21 @@ class Lexer:
         if decimals == 0: return Token(T_INT, int(number), pos_start, self.pos)
         return Token(T_FLOAT, float(number), pos_start, self.pos)
 
-#    def make_string(self):
-#        string = '"'
-#        pos_start = self.pos.copy()
-#        self.adv()
-#
-#        while self.char != None and self.char != '"':
-#            string += self.char
-#            self.adv()
-#
-#        string += '"'
-#        return Token(T_STRING, string, pos_start, self.pos)
+    def make_identifier(self):
+        id_str = ''
+        pos_start = self.pos.copy()
+
+        while self.char != None and self.char in ALPHANUMERIC + '_':
+            id_str += self.char
+            self.adv()
+
+        t_type = T_KEYWORD if id_str in KEYWORDS else T_IDENTIFIER
+        return Token(t_type, id_str, pos_start, self.pos)
 
 # RUN PROGRAM
+global_symbol_table = SymbolTable()
+global_symbol_table.set('null', Number(0))
+
 def run(fname, text):
     # Generate tokens from raw code
     lexer = Lexer(fname, text)
@@ -103,6 +112,7 @@ def run(fname, text):
     # Interpret program from AST
     interpreter = Interpreter()
     context = Context('<module>')
+    context.symbol_table = global_symbol_table
     result = interpreter.visit(ast.node, context)
 
     return result.value, result.error

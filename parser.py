@@ -37,6 +37,21 @@ class UnaryOpNode:
     def __repr__(self):
         return f'({self.op_token}, {self.node})'
 
+class VarAssignNode:
+    def __init__(self, var_name_token, value_node):
+        self.var_name_token = var_name_token
+        self.value_node = value_node
+
+        self.pos_start = self.var_name_token.pos_start
+        self.pos_end = self.var_name_token.pos_end
+
+class VarAccessNode:
+    def __init__(self, var_name_token):
+        self.var_name_token = var_name_token
+
+        self.pos_start = self.var_name_token.pos_start
+        self.pos_end = self.var_name_token.pos_end
+
 # PARSE RESULT
 class ParseResult:
     def __init__(self):
@@ -70,6 +85,7 @@ class Parser:
             self.token = self.tokens[self.t_index]
         return self.token
 
+
     def parse(self):
         res = self.expr()
         if not res.error and self.token.type != T_EOF:
@@ -86,6 +102,10 @@ class Parser:
         if token.type in (T_INT, T_FLOAT):
             res.register(self.adv())
             return res.success(NumberNode(token))
+
+        if token.type == T_IDENTIFIER:
+            res.register(self.adv())
+            return res.success(VarAccessNode(token))
 
         elif token.type == T_LPAREN:
             res.register(self.adv())
@@ -119,7 +139,31 @@ class Parser:
         return self.power()
 
     def term(self): return self.binary_op(self.factor, (T_STAR, T_SLASH))
-    def expr(self): return self.binary_op(self.term, (T_PLUS, T_MINUS))
+
+    def expr(self):
+        if self.token.matches(T_KEYWORD, 'var'):
+            res = RuntimeResult()
+            res.register(self.adv())
+
+            if self.token.type != T_IDENTIFIER:
+                return res.failure(InvalidSyntaxError(
+                    self.token.pos_start, self.token.pos_end,
+                    "Expected identifier"))
+
+            var_name = self.current_token
+            res.register(self.adv())
+
+            if self.token.type != T_EQUAL:
+                return res.failure(InvalidSyntaxError(
+                    self.token.pos_start, self.token.pos_end,
+                    "Expected '='"))
+
+            res.register(self.adv())
+            expr = res.register(self.expr())
+            if res.error: return res
+            return res.success(VarAssignNode(var_name, expr))
+
+        return self.binary_op(self.term, (T_PLUS, T_MINUS))
 
     def binary_op(self, func_a, ops, func_b=None):
         if func_b == None:
