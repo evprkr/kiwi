@@ -1,0 +1,45 @@
+// Basic Calculator (WIP)
+
+// Functions
+
+func add(x, y) >>
+	num result = x + y; // Type 'num' variables can be assigned int or float
+	say "Result: {result}\n"; // All strings are formatted by default, unless preceded with a 'u'
+<<
+
+func subtract(x, y) >>
+	num result = x - y;
+	say "Result: {result}\n"; // Variables inside curly braces will be printed in place
+<<
+
+func multiply(x, y) >>
+	num result = x * y;
+	say "Result: {result}\n"; // Unformatted strings print the literal string as-is (eg: 'say u"Result: {result}"' prints exactly that)
+<<
+
+func divide(x, y) >>
+	num result = x / y;
+	say "Result: {result}\n";
+<<
+
+// Program Enter
+
+say "Basic Calculator in Kiwi" // Print text with 'say'
+say "Enter a number, then an operator, then another number\n" // Escape characters like '\n' work as expected
+
+
+// This is wrapped in a 'while' loop so it will continue forever
+while True >>
+	say "Basic Calculator in Kiwi" // Print text with 'say'
+	say "Enter a number, then an operator, then another number\n" // Escape characters like '\n' work as expected
+
+	num first = ask "Number: "; // Get user input with 'ask'
+	char operator = ask "Operator: "; // Variables can be assigned with 'ask' as well, 'char' accepts a single character only
+	num second = ask "Number: "; // If the input doesn't match 'num' (int or float), the program will crash with an error if it's not handled
+
+	if operator == "+" >> add(first, second); << // Statements can be one liners to save space
+	elif operator == "-" >> subtract(first, second); << // The parser doesn't care as long as the syntax is correct
+	elif operator == "*" >> multiply(first, second); <<
+	elif operator == "/" >> divide(first, second; <<
+	else >> say "Invalid operator, try again!" <<
+<<

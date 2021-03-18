@@ -1,0 +1,44 @@
+// SYNTAX IDEAS
+// Just writing random thoughts and notes about Kiwi syntax here.
+
+// Should I use open and close... (>> and <<)
+
+for i to 100 >>
+	if i % 15 == 0 >> say "FizzBuzz" <<
+	elif i % 3 == 0 >> say "Fizz" <<
+	elif i % 5 == 0 >> say "Buzz" <<
+	else >> say i <<
+<<
+
+// Or just open? (>>)
+
+for i to 100 >>
+	if i % 15 == 0 >> say "FizzBuzz"
+	elif i % 3 == 0 >> say "Fizz"
+	elif i % 5 == 0 >> say "Buzz"
+	else >> say i
+
+// I think the second example looks cleaner and is easier to read
+// I could also do something completely different...
+
+for i to 100 ...
+	if i % 15 == 0 ... say "FizzBuzz"
+	elif i % 3 == 0 ... say "Fizz"
+	elif i % 5 == 0 ... say "Buzz"
+	else ... say i
+
+// That actually somehow looks cleaner, but isn't quite as nice to write
+// So maybe you could use 'then' for single line and '...' for multiline
+
+while True ...
+	input = ask "How old are you?\n"
+
+	if input % 15 == 0 ...
+		say "You're {input} years old?"
+		say "That's a FizzBuzz number!"
+	elif i % 3 == 0 || i % 5 == 0 ...
+		say "You're {input} years old?"
+		say "That's ALMOST a FizzBuzz number!"
+	else then say "Hey, I'm also {input} years old!"
+
+// Maybe it's just because I wrote the syntax, but I like how that looks
