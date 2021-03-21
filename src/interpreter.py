@@ -38,19 +38,19 @@ class Number:
         return self
 
     # MATHEMATICAL OPERATIONS
-    def math_add(self, other):
+    def val_add(self, other):
         if isinstance(other, Number):
             return Number(self.value + other.value).set_context(self.context), None
 
-    def math_subtract(self, other):
+    def val_subtract(self, other):
         if isinstance(other, Number):
             return Number(self.value - other.value).set_context(self.context), None
 
-    def math_multiply(self, other):
+    def val_multiply(self, other):
         if isinstance(other, Number):
             return Number(self.value * other.value).set_context(self.context), None
 
-    def math_divide(self, other):
+    def val_divide(self, other):
         if isinstance(other, Number):
             if other.value == 0:
                 return None, RuntimeError(
@@ -59,12 +59,50 @@ class Number:
 
             return Number(self.value / other.value).set_context(self.context), None
 
-    def math_power(self, other):
+    def val_power(self, other):
         if isinstance(other, Number):
             return Number(self.value ** other.value).set_context(self.context), None
 
+    def copy(self):
+        copy = Number(self.value)
+        copy.set_pos(self.pos_start, self.pos_end)
+        copy.set_context(self.context)
+        return copy
+
     def __repr__(self):
         return str(self.value)
+
+class String:
+    def __init__(self, value):
+        self.value = value
+        self.set_pos()
+        self.set_context()
+
+    def set_pos(self, pos_start=None, pos_end=None):
+        self.pos_start = pos_start
+        self.pos_end = pos_end
+        return self
+
+    def set_context(self, context=None):
+        self.context = context
+        return self
+
+    def val_add(self, other):
+        if isinstance(other, String):
+            return String(self.value + other.value).set_context(self.context), None
+
+    def val_multiply(self, other):
+        if isinstance(other, Number):
+            return String(self.value * other.value).set_context(self.context), None
+
+    def copy(self):
+        copy = String(self.value)
+        copy.set_pos(self.pos_start, self.pos_end)
+        copy.set_context(self.context)
+        return copy
+
+    def __repr__(self):
+        return f'"{self.value}"'
 
 # CONTEXT
 class Context:
@@ -106,6 +144,10 @@ class Interpreter:
         return RuntimeResult().success(
             Number(node.token.value).set_context(context).set_pos(node.pos_start, node.pos_end))
 
+    def visit_StringNode(self, node, context):
+        return RuntimeResult().success(
+            String(node.token.value).set_context(context).set_pos(node.pos_start, node.pos_end))
+
     def visit_VarAccessNode(self, node, context):
         res = RuntimeResult()
         var_name = node.var_name_token.value
@@ -116,7 +158,8 @@ class Interpreter:
                 node.pos_start, node.pos_end,
                 f"'{var_name}' is not defined",
                 context))
-
+        
+        value = value.copy().set_pos(node.pos_start, node.pos_end)
         return res.success(value)
 
     def visit_VarAssignNode(self, node, context):
@@ -136,17 +179,17 @@ class Interpreter:
         if res.error: return res
 
         if node.op_token.type == T_PLUS:
-            result, error = left.math_add(right)
+            result, error = left.val_add(right)
         elif node.op_token.type == T_MINUS:
-            result, error = left.math_subtract(right)
+            result, error = left.val_subtract(right)
         elif node.op_token.type == T_STAR:
-            result, error = left.math_multiply(right)
+            result, error = left.val_multiply(right)
         elif node.op_token.type == T_SLASH:
-            result, error = left.math_divide(right)
+            result, error = left.val_divide(right)
         elif node.op_token.type == T_POW:
-            result, error = left.math_power(right)
+            result, error = left.val_power(right)
         elif node.op_token.type == T_MOD:
-            result, error = left.math_modulo(right)
+            result, error = left.val_modulo(right)
 
         if error: return res.failure(error)
         else: return res.success(result.set_pos(node.pos_start, node.pos_end))
@@ -159,7 +202,7 @@ class Interpreter:
         error = None
 
         if node.op_token.type == T_MINUS:
-            number, error = number.math_multiply(Number(-1))
+            number, error = number.val_multiply(Number(-1))
 
         if error: return res.failure(error)
         else: return res.success(number.set_pos(node.pos_start, node.pos_end))

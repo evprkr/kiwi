@@ -83,6 +83,17 @@ class Lexer:
         if decimals == 0: return Token(T_INT, int(number), pos_start, self.pos)
         return Token(T_FLOAT, float(number), pos_start, self.pos)
 
+    def make_string(self):
+        str_value = ''
+        pos_start = self.pos.copy()
+        self.adv()
+
+        while self.char != None and self.char != '"':
+            str_value += self.char
+            self.adv()
+
+        return Token(T_STRING, str_value, pos_start, self.pos)
+
     def make_identifier(self):
         id_str = ''
         pos_start = self.pos.copy()
@@ -91,8 +102,8 @@ class Lexer:
             id_str += self.char
             self.adv()
 
-        t_type = T_KEYWORD if id_str in KEYWORDS else T_IDENTIFIER
-        return Token(t_type, id_str, pos_start, self.pos)
+        token_type = T_KEYWORD if id_str in KEYWORDS else T_IDENTIFIER
+        return Token(token_type, id_str, pos_start, self.pos)
 
 # RUN PROGRAM
 global_symbol_table = SymbolTable()

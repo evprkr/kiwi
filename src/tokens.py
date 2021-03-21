@@ -19,7 +19,15 @@ class Token:
 
 # KEYWORDS
 KEYWORDS = [
-    'var'
+    'var',
+    'num',
+    'int',
+    'float',
+    'char',
+    'str',
+    'list',
+    'set',
+    'record',
 ]
 
 # CONSTANTS
