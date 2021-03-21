@@ -19,6 +19,6 @@ This is an example of the (future) syntax of Kiwi, which is still subject to cha
 &nbsp;
 
 	// Convert fahrenheit to celsius
-	x = ask "What is the temperature today in F?"
-	y = (x - 32) * 5/9
+	num x = ask "What is the temperature today in F?"
+	num y = (x - 32) * 5/9
 	say "That's {y} degrees celsius!"
