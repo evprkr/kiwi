@@ -165,8 +165,16 @@ class Interpreter:
     def visit_VarAssignNode(self, node, context):
         res = RuntimeResult()
         var_name = node.var_name_token.value
+        var_type = node.var_type
+
         value = res.register(self.visit(node.value_node, context))
         if res.error: return res
+
+        if node.verify_type(value) == False:
+            return res.failure(RuntimeError(
+                node.pos_start, node.pos_end,
+                f"'{value}' does not match type '{var_type}'",
+                context))
 
         context.symbol_table.set(var_name, value)
         return res.success(value)

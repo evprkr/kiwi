@@ -48,12 +48,20 @@ class UnaryOpNode:
         return f'({self.op_token}, {self.node})'
 
 class VarAssignNode:
-    def __init__(self, var_name_token, value_node):
+    def __init__(self, var_name_token, value_node, var_type):
         self.var_name_token = var_name_token
         self.value_node = value_node
+        self.var_type = var_type
 
         self.pos_start = self.var_name_token.pos_start
         self.pos_end = self.var_name_token.pos_end
+
+    def verify_type(self, value):
+        if self.var_type == 'var': return True
+        elif self.var_type == 'num' and value in NUMBERS + '.': return True
+        elif self.var_type == 'int' and isinstance(value, int): return True
+        elif self.var_type == 'str' and isinstance(value, str): return True
+        else: return False
 
 class VarAccessNode:
     def __init__(self, var_name_token):
@@ -162,7 +170,8 @@ class Parser:
     def expr(self):
         res = ParseResult()
 
-        if self.token.matches(T_KEYWORD, 'var'):
+        if self.token.matches(T_KEYWORD, self.token.value):
+            keyword = self.token.value
             res.register_adv(); self.adv()
 
             if self.token.type != T_IDENTIFIER:
@@ -181,7 +190,8 @@ class Parser:
             res.register_adv(); self.adv()
             expr = res.register(self.expr())
             if res.error: return res
-            return res.success(VarAssignNode(var_name, expr))
+
+            return res.success(VarAssignNode(var_name, expr, keyword))
 
         node = res.register(self.binary_op(self.term, (T_PLUS, T_MINUS)))
 

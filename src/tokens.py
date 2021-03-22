@@ -17,7 +17,6 @@ class Token:
         if self.value: return f'{self.type}:{self.value}'
         else: return f'{self.type}'
 
-# KEYWORDS
 KEYWORDS = [
     'var',
     'num',
@@ -27,14 +26,14 @@ KEYWORDS = [
     'str',
     'list',
     'set',
-    'record',
+    'tab',
 ]
 
 # CONSTANTS
 T_KEYWORD =     'KEYWORD'
 T_IDENTIFIER =  'IDENTIFIER'
 
-# DATA TYPES
+# DATATYPES
 T_INT =         'INT'
 T_FLOAT =       'FLOAT'
 T_STRING =      'STRING'

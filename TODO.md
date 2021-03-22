@@ -6,7 +6,7 @@ For function usage descriptions, I'm using * to denote an optional argument
 * Arrays
 	- lists ``[item]`` - store any data type in a specific order
 	- sets ``(item)`` - store one data type in a specific order
-	- records ``{key : item}`` - store any data type with indices and keys, can be modified
+	- tables ``{key : item}`` - store any data type with indices and keys, can be modified
 * List functions
 	- ``list.add(x)`` - appends x to the end of a list
 	- ``list.rem(n, x*)`` - removes the last n items in a list, or removes n instances of x starting from the end of a list
