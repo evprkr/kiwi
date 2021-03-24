@@ -2,6 +2,16 @@ This is a rough list of things I am planning to add to Kiwi, in no particular or
 
 For function usage descriptions, I'm using * to denote an optional argument
 
+# KNOWN BUGS
+
+
+
+# THINGS TO FIX/CHANGE
+
+
+
+# TO ADD
+
 * User function definitions and calls
 * Arrays
 	- lists ``[item]`` - store any data type in a specific order

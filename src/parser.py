@@ -56,12 +56,19 @@ class VarAssignNode:
         self.pos_start = self.var_name_token.pos_start
         self.pos_end = self.var_name_token.pos_end
 
-    def verify_type(self, value):
+    def verify_type(self):
+        value = self.value_node.token.value
         if self.var_type == 'var': return True
-        elif self.var_type == 'num' and value in NUMBERS + '.': return True
-        elif self.var_type == 'int' and isinstance(value, int): return True
-        elif self.var_type == 'str' and isinstance(value, str): return True
-        else: return False
+        elif self.var_type == 'num':
+            if isinstance(value, int): return True
+            if isinstance(value, float): return True
+        elif self.var_type == 'int': return isinstance(value, int)
+        elif self.var_type == 'float': return isinstance(value, float)
+        elif self.var_type == 'str': return isinstance(value, str)
+        elif self.var_type == 'char':
+            if isinstance(value, str) and len(value) == 1: return True
+
+        return False
 
 class VarAccessNode:
     def __init__(self, var_name_token):
