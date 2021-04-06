@@ -4,7 +4,7 @@ Kiwi is just a pet project of mine that I'm working on while I learn about progr
 ### Features
 Kiwi is currently extremely barebones, so below is a list of features that have been implemented:
 * Basic lexing, parsing, and interpreting of mathematical functions
-* Variable assignment and referencing of numbers and strings
+* Variable assignment and referencing
 * Error messages (with tracebacks!) for various wrongdoings
 
 ### Code Examples
@@ -21,15 +21,15 @@ This is an example of the (future) syntax of Kiwi, which is still subject to cha
 &nbsp;
 
 	// Convert fahrenheit to celsius
-	num x = ask "What is the temperature today in F?";
-	num y = (x - 32) * 5/9;
+	let x = ask "What is the temperature today in F?";
+	let y = (x - 32) * 5/9;
 	say "That's {y} degrees celsius!";
 
 &nbsp;
 
 	// Contained for loop
-	list whitelist = ["Steve", "Bill", "Linus"];
-	str name = ask "What is your name? ";
+	list whitelist = ["Steve", "Bill", "Terry"];
+	let name = ask "What is your name? ";
 
 	if name in whitelist[*] >>
 		say "Access Granted!";
