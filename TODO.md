@@ -26,8 +26,9 @@ For function usage descriptions, I'm using * to denote an optional argument
 * Contained loops
 	- ``if x in list[*]`` is a quick way to loop through and compare x to each item in a list, in order, returns True at the first match, returns False if no matches
 * Built-in functions
-	- ``ask`` and ``say`` for input and output
+	- ``ask`` and ``say`` for console input and output
 	- ``len(x)`` - returns the length (int) of items in an object
+	- ``type(x)`` - returns the datatype of object x
 * Modules
 	- Random - returning random numbers and other related functions
 	- Math - more complex math functions (mod, sqrt, exp, etc.)

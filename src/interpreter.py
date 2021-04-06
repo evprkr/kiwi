@@ -170,12 +170,6 @@ class Interpreter:
         value = res.register(self.visit(node.value_node, context))
         if res.error: return res
 
-        if not node.verify_type():
-            return res.failure(RuntimeError(
-                node.pos_start, node.pos_end,
-                f"'{value}' does not match type '{var_type}'",
-                context))
-
         context.symbol_table.set(var_name, value)
         return res.success(value)
 

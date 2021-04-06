@@ -18,15 +18,7 @@ class Token:
         else: return f'{self.type}'
 
 KEYWORDS = [
-    'var',
-    'num',
-    'int',
-    'float',
-    'char',
-    'str',
-    'list',
-    'set',
-    'tab',
+    'let',
 ]
 
 # CONSTANTS
@@ -57,6 +49,11 @@ T_LESSTHAN =    'LESSTHAN'
 T_GREATTHAN =   'GREATTHAN'
 T_LESSEQUAL =   'LESSEQUAL'
 T_GREATEQUAL =  'GREATEQUAL'
+
+# LOGICAL OPERATORS
+T_AND =         'AND'
+T_OR =          'OR'
+T_NOT =         'NOT'
 
 # OTHER
 T_EOF =         'EOF'

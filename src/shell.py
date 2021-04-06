@@ -7,7 +7,7 @@ import errors
 import os, sys
 
 # INFO
-version = '0.0.4'
+version = '0.0.7'
 
 # SHELL FUNCTIONS
 def exit_shell():
