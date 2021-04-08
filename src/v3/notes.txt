@@ -1,0 +1,82 @@
+===============================
+||      SYNTAX DESIGN        ||
+===============================
+
+Just throwing random ideas at the wall and seeing what sticks.
+
+===============================
+
+< Version 1 >
+Ultimately, not too bad. It looks unique, but isn't hard to read, and feels fairly natural to write after just
+a few minutes. Blocks are opened with a double colon and closed with a double semicolon, leading to normal looking
+regular code as well as compact code. The only issue I have is that in normal code, the second semicolon placed on
+its own line looks a little weird, it looks more normal if it is placed on the same line as `return`
+
+Double colons may be a little confusing to anyone coming from a language that uses those for paths or other things.
+
+This version uses no parenthesis to declare function arguments. Any arguments are placed between the function colon
+and the block open double colon, and are separated by commas. It feels normal to write, but looks a little strange,
+
+NORMAL:
+func add_num: x, y ::
+	let z = x + y;
+	return z;
+;
+
+let sum = add_num: 2, 4;
+
+COMPACT:
+func add_num: x, y :: let z = x + y; return z;;
+let sum = ad_num: 2, 4;
+
+===============================
+
+< Version 2 >
+This version uses a single colon to open a block, then a double semicolon to close a block. It looks normal in
+regular code, but looks somewhat unnatural when made into compact code.
+
+This version also uses parenthesis to contain function arguments, which is more traditional.
+
+NORMAL:
+func add_num(x, y):
+	let z = x + y;
+	return z;
+;
+
+let sum = add_num(2, 4);
+
+COMPACT:
+func add_num(x, y): let z = x + y; return z;;
+let sum = add_num(2, 4);
+
+===============================
+
+< Version 4 >
+This version of the syntax is very standard. I think it's too boring, and I really don't like using brackets,
+but I figured I should at least try them out at least once.
+
+It just looks too much like Javascript or something similar. I want something more unique but not TOO unique.
+
+class Person {
+	func init(self, name, age) {
+			const self.name = name;
+			let self.age = age;
+	}
+}
+
+let person_1 = Person("Hank Venture", 16);
+print(person_1.name);
+
+//OUTPUT: Hank Venture
+
+===============================
+
+< Version 5 >
+
+
+===============================
+
+< Version 6 >
+
+
+===============================
