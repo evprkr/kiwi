@@ -1,0 +1,13 @@
+# Kiwi Grammar
+
+comment 		-> // *
+
+expression 		-> term (('+' | '-') term)*
+
+term 			-> factor (('*' | '/') factor)*
+
+factor 			-> NUMBER | '(' EXP ')'
+				 > egg (POW factor)*
+
+egg				-> INT | FLOAT | STRING | IDENTIFIER
+				 > LPAREN expr RPAREN

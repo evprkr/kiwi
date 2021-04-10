@@ -1,11 +1,9 @@
-# Kiwi Programming Language Rev
-
 import lexer
 import parser
-import compiler
+import interpreter
 
-from tokens import *
-from errors import *
+import tokens
+import errors
 
 import os, sys
 
@@ -20,21 +18,21 @@ def exit_shell():
 if len(sys.argv) > 1 and str(sys.argv[1]) == '-c': os.system('clear')
 
 print(r"""
-       ,--.,--.
-      (  . \   \
-      //_   `   |
-     /' |       |
-    '    \      ;
-       __|`--\,/
-        /\    |
-             -|-""")
-print(f"\n[ Kiwi Shell Rev {version} ]")
+   ,--.,--.
+  (  . \   \
+  //_   `   |
+ /' |       |
+'    \      ;
+   __|`--\,/
+    /\    |
+         -|-""")
+print(f"\nKiwi Shell v{version}")
 
 while True:
-    text = input('>>--> ')
+    text = input('~ ')
     
     if text == 'exit': exit_shell()
     else: result, error = lexer.run('$FILE', text)
 
     if error: print(error.as_string())
-    else: print(f"OUTPUT: {result}\n")
+    else: print(f"{result}\n")

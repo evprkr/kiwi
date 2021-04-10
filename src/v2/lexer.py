@@ -1,45 +1,48 @@
+# IMPORTS
+from tokens import *
+from errors import *
 from parser import *
-from token import *
-from error import *
+from interpreter import *
+
+import string
 
 # CONSTANTS
+ALPHAS = string.ascii_letters
 NUMBERS = '0123456789'
-ALPHAS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-ALPHANUMERICS = NUMBERS + ALPHAS
+ALPHANUMERIC = ALPHAS + NUMBERS
 
-# POSITION TRACKING
+# POSITION
 class Position:
-    def __init__(self, index, line, col, fname, text):
+    def __init__(self, index, ln, col, fname, text):
         self.index = index
-        self.line = line
+        self.ln = ln
         self.col = col
         self.fname = fname
         self.text = text
 
-    def adv(self, char=None, eol=False):
+    def adv(self, char=None):
         self.index += 1
         self.col += 1
 
-        if eol == True:
-            self.line += 1
+        if char == '\n':
+            self.ln += 1
             self.col = 0
 
         return self
 
     def copy(self):
-        return Position(self.index, self.line, self.col, self.fname, self.text)
+        return Position(self.index, self.ln, self.col, self.fname, self.text)
 
-# LEXER CLASS
+# LEXER
 class Lexer:
     def __init__(self, fname, text):
-        self.fname = fname
         self.text = text
         self.pos = Position(-1, 0, -1, fname, text)
         self.char = None
         self.adv()
 
-    def adv(self, eol=False):
-        self.pos.adv(self.char, eol=eol)
+    def adv(self):
+        self.pos.adv(self.char)
         self.char = self.text[self.pos.index] if self.pos.index < len(self.text) else None
 
     def tokenize(self):
@@ -49,19 +52,18 @@ class Lexer:
             if self.char in ' ': self.adv()
             elif self.char in NUMBERS: tokens.append(self.make_number())
             elif self.char in ALPHAS: tokens.append(self.make_identifier())
-            elif self.char == '"': tokens.append(self.make_string()); self.adv()
             elif self.char == '+': tokens.append(Token(T_PLUS, pos_start = self.pos)); self.adv()
             elif self.char == '-': tokens.append(Token(T_MINUS, pos_start = self.pos)); self.adv()
             elif self.char == '*': tokens.append(Token(T_STAR, pos_start = self.pos)); self.adv()
             elif self.char == '/': tokens.append(Token(T_SLASH, pos_start = self.pos)); self.adv()
             elif self.char == '^': tokens.append(Token(T_POW, pos_start = self.pos)); self.adv()
+            elif self.char == '=': tokens.append(Token(T_EQUAL, pos_start = self.pos)); self.adv()
             elif self.char == '(': tokens.append(Token(T_LPAREN, pos_start = self.pos)); self.adv()
             elif self.char == ')': tokens.append(Token(T_RPAREN, pos_start = self.pos)); self.adv()
-            elif self.char == '=': tokens.append(Token(T_EQUAL, pos_start = self.pos)); self.adv()
-            elif self.char == ';': tokens.append(Token(T_EOL, pos_start = self.pos)); self.adv(eol=True)
-            else: return [], IllegalCharError(self.pos.copy(), self.pos , "'" + self.char + "'")
+            elif self.char == '"': tokens.append(self.make_string()); self.adv()
+            else: return [], IllegalCharError(self.pos.copy(), self.pos, "'" + self.char + "'")
 
-        tokens.append(Token(T_EOF, pos_start = self.pos))
+        tokens.append(Token(T_EOF, pos_start=self.pos))
         return tokens, None
 
     def make_number(self):
@@ -82,36 +84,50 @@ class Lexer:
         return Token(T_FLOAT, float(number), pos_start, self.pos)
 
     def make_string(self):
-        string = ''
+        str_value = ''
         pos_start = self.pos.copy()
         self.adv()
 
         while self.char != None and self.char != '"':
-            string += self.char
+            str_value += self.char
             self.adv()
 
-        return Token(T_STRING, string, pos_start, self.pos)
+        return Token(T_STRING, str_value, pos_start, self.pos)
 
     def make_identifier(self):
-        identifier = ''
+        id_str = ''
         pos_start = self.pos.copy()
 
-        while self.char != None and self.char in ALPHANUMERICS + '_':
-            identifier += self.char
+        while self.char != None and self.char in ALPHANUMERIC + '_':
+            id_str += self.char
             self.adv()
 
-        if identifier in KEYWORDS: token_type = T_KEYWORD
-        else: token_type = T_IDENT
-
-        return Token(token_type, identifier, pos_start, self.pos)
+        token_type = T_KEYWORD if id_str in KEYWORDS else T_IDENTIFIER
+        return Token(token_type, id_str, pos_start, self.pos)
 
 # RUN PROGRAM
+global_symbol_table = SymbolTable()
+global_symbol_table.set('null', Number(0))
+
 def run(fname, text):
+    # Generate tokens from raw code
     lexer = Lexer(fname, text)
     tokens, error = lexer.tokenize()
     if error: return None, error
 
+    print(f"LEXER: {tokens}")
+
+    # Generate AST from tokens
     parser = Parser(tokens)
     ast = parser.parse()
+    if ast.error: return None, ast.error
 
-    return ast
+    print(f"PARSER: {ast.node}")
+
+    # Interpret program from AST
+    interpreter = Interpreter()
+    context = Context('<module>')
+    context.symbol_table = global_symbol_table
+    result = interpreter.visit(ast.node, context)
+
+    return result.value, result.error

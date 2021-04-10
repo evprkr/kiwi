@@ -10,50 +10,46 @@ class Token:
 
         if pos_end: self.pos_end = pos_end
 
-    def matches(self, type_, value):
+    def is_type(self, type_, value):
         return self.type == type_ and self.value == value
 
     def __repr__(self):
         if self.value: return f'{self.type}:{self.value}'
         else: return f'{self.type}'
 
+# KEYWORDS
 KEYWORDS = [
-    'let',
+    'let',              # MUTABLE VARIABLE
+    'set',              # IMMUTABLE VARIABLE
+    'for',              # FOR LOOP
+    'while',            # WHILE LOOP
+    'func',             # DECLARE FUNCTION
 ]
 
-# CONSTANTS
-T_KEYWORD =     'KEYWORD'
-T_IDENTIFIER =  'IDENTIFIER'
-
 # DATATYPES
-T_INT =         'INT'
-T_FLOAT =       'FLOAT'
-T_STRING =      'STRING'
+T_INT =     'INT'       # INTEGER
+T_FLOAT =   'FLOAT'     # FLOATING POINT
+T_STRING =  'STRING'    # STRING
 
-# MATH OPERATORS
-T_PLUS =        'PLUS'
-T_MINUS =       'MINUS'
-T_STAR =        'STAR'
-T_SLASH =       'SLASH'
-T_POW =         'POW'
+# OPERATORS
+T_PLUS =    'PLUS'      # PLUS/POSITIVE
+T_MINUS =   'MINUS'     # MINUS/NEGATIVE
+T_STAR =    'STAR'      # STAR/MULTIPLY
+T_SLASH =   'SLASH'     # SLASH/DIVIDE
+T_POW =     'POW'       # POWER (EXPONENT)
+T_LPAREN =  'LPAREN'    # LEFT PARENTHESIS
+T_RPAREN =  'RPAREN'    # RIGHT PARENTHESIS
 
-# DELIMITERS
-T_LPAREN =      'LPAREN'
-T_RPAREN =      'RPAREN'
+# COMPARATORS
+T_EQUAL =   'EQUAL'     # SINGLE EQUALS
+T_EQEQ =    'EQEQ'      # DOUBLE EQUALS
 
-# RELATIONAL OPERATORS
-T_EQUAL =       'EQUAL'
-T_EQEQUAL =     'EQEQUAL'
-T_NOTEQUAL =    'NOTEQUAL'
-T_LESSTHAN =    'LESSTHAN'
-T_GREATTHAN =   'GREATTHAN'
-T_LESSEQUAL =   'LESSEQUAL'
-T_GREATEQUAL =  'GREATEQUAL'
+# RESERVED
+T_FUNC =    'FUNC'      # DECLARE FUNCTION
+T_IDENT =   'IDENT'     # VARIABLE IDENTIFIER
+T_KEYWORD = 'KEYWORD'   # VARIABLE KEYWORD
 
-# LOGICAL OPERATORS
-T_AND =         'AND'
-T_OR =          'OR'
-T_NOT =         'NOT'
-
-# OTHER
-T_EOF =         'EOF'
+# OTHERS
+T_COMMENT = 'COMMENT'   # COMMENT (NO WAY!)
+T_EOL =     'EOL'       # END OF LINE
+T_EOF =     'EOF'       # END OF FILE

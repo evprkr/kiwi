@@ -1,3 +1,0 @@
-# GRAMMAR
-
-expr	:	term ((PLUS | MINUS) term)*

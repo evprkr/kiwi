@@ -1,9 +1,9 @@
+from lexer import *
+
 from tokens import *
 from errors import *
-from lexer import *
-from interpreter import *
 
-# NODES
+# BASIC NODES
 class NumberNode:
     def __init__(self, token):
         self.token = token
@@ -24,10 +24,11 @@ class StringNode:
     def __repr__(self):
         return f'{self.token}'
 
+# OPERATION NODES
 class BinaryOpNode:
-    def __init__(self, left_node, op_token, right_node):
-        self.left_node = left_node
+    def __init__(self, op_token, right_node, left_node):
         self.op_token = op_token
+        self.left_node = left_node
         self.right_node = right_node
 
         self.pos_start = self.left_node.pos_start
@@ -42,41 +43,39 @@ class UnaryOpNode:
         self.node = node
 
         self.pos_start = self.op_token.pos_start
-        self.pos_end = node.pos_end
+        self.pos_end = self.node.pos_end
 
-    def __repr__(self):
-        return f'({self.op_token}, {self.node})'
-
+# VARIABLE NODES
 class VarAssignNode:
-    def __init__(self, var_name_token, value_node, var_type):
-        self.var_name_token = var_name_token
-        self.value_node = value_node
-        self.var_type = var_type
+    def __init__(self, var_ident, var_value, var_keyword):
+        self.var_ident = var_ident
+        self.var_value = var_value
+        self.var_keyword = var_keyword
 
-        self.pos_start = self.var_name_token.pos_start
-        self.pos_end = self.var_name_token.pos_end
+        self.pos_start = self.var_ident.pos_start
+        self.pos_end = self.var_ident.pos_end
 
 class VarAccessNode:
-    def __init__(self, var_name_token):
-        self.var_name_token = var_name_token
+    def __init__(self, var_ident):
+        self.var_ident = var_ident
 
-        self.pos_start = self.var_name_token.pos_start
-        self.pos_end = self.var_name_token.pos_end
+        self.pos_start = self.var_ident.pos_start
+        self.pos_end = self.var_ident.pos_end
 
-# PARSE RESULT
-class ParseResult:
+# PARSER RESULT
+class Result:
     def __init__(self):
         self.error = None
         self.node = None
         self.adv_count = 0
 
-    def register_adv(self):
+    def reg_adv(self):
         self.adv_count += 1
 
-    def register(self, res):
-        self.adv_count += res.adv_count
-        if res.error: self.error = res.error
-        return res.node
+    def register(self, result):
+        self.adv_count += result.adv_count
+        if result.error: self.error = result.error
+        return result.node
 
     def success(self, node):
         self.node = node
@@ -87,127 +86,140 @@ class ParseResult:
             self.error = error
         return self
 
-# PARSER
+# MAIN PARSER
 class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
-        self.t_index = -1
+        self.index = -1
         self.adv()
 
-    def adv(self, ):
-        self.t_index += 1
-        if self.t_index < len(self.tokens):
-            self.token = self.tokens[self.t_index]
+    def adv(self):
+        self.index += 1
+        if self.index < len(self.tokens):
+            self.token = self.tokens[self.index]
         return self.token
 
-
     def parse(self):
-        res = self.expr()
-        if not res.error and self.token.type != T_EOF:
-            return res.failure(InvalidSyntaxError(
+        result = self.expression()
+        if not result.error and self.token.type != T_EOF:
+            return result.failure(InvalidSyntaxError(
                 self.token.pos_start, self.token.pos_end,
-                "Expected mathematical operator"))
-        return res
+                "Expected operator"))
+        return result
 
-    # OPERATIONS
-    def atom(self):
-        res = ParseResult()
+    # EGG 
+    def egg(self):
+        result = Result()
         token = self.token
 
+        # NUMBER
         if token.type in (T_INT, T_FLOAT):
-            res.register_adv(); self.adv()
-            return res.success(NumberNode(token))
+            result.reg_adv(); self.adv();
+            return result.success(NumberNode(token))
 
-        if token.type == T_STRING:
-            res.register_adv(); self.adv()
-            return res.success(StringNode(token))
+        # STRING
+        elif token.type == T_STRING:
+            result.reg_adv(); self.adv();
+            return result.success(StringNode(token))
 
-        if token.type == T_IDENTIFIER:
-            res.register_adv(); self.adv()
-            return res.success(VarAccessNode(token))
+        # IDENTIFIER
+        elif token.type == T_IDENT:
+            result.reg_adv(); self.adv();
+            return result.success(VarAccessNode(token))
 
+        # PARENTHETICAL
         elif token.type == T_LPAREN:
-            res.register_adv(); self.adv()
-            expr = res.register(self.expr())
-            if res.error: return res
+            result.reg_adv(); self.adv();
+            expr = result.register(self.expression())
+            if result.error: return result
+
             if self.token.type == T_RPAREN:
-                res.register_adv(); self.adv()
-                return res.success(expr)
+                result.reg_adv(); self.adv();
+                return result.success(expr)
             else:
-                return res.failure(InvalidSyntaxError(
+                return result.failure(InvalidSyntaxError(
                     self.token.pos_start, self.token.pos_end,
                     "Expected ')'"))
-
-        return res.failure(InvalidSyntaxError(
+        
+        # NONE OF THE ABOVE
+        return result.failure(InvalidSyntaxError(
             token.pos_start, token.pos_end,
             "Expected int, float, identifier, or operator"))
 
-    def power(self):
-        return self.binary_op(self.atom, (T_POW, ), self.factor)
+    # POWER (moved to FACTOR)
+    # def power(self):
+    #    return self.binary_op(self.egg, (T_POW, ), self.factor)
 
+    # FACTOR
     def factor(self):
-        res = ParseResult()
+        result = Result()
         token = self.token
-
+        
         if token.type in (T_PLUS, T_MINUS):
-            res.register_adv(); self.adv()
-            factor = res.register(self.factor())
-            if res.error: return res
-            return res.success(UnaryOpNode(token, factor))
+            result.reg_adv(); self.adv();
+            factor = result.register(self.factor())
+            if result.error: return result
+            return result.success(UnaryOpNode(token, factor))
+   
+        # POWER
+        return self.binary_op(self.egg, (T_POW, ), self.factor)
 
-        return self.power()
-
+    # TERM
     def term(self):
         return self.binary_op(self.factor, (T_STAR, T_SLASH))
 
-    def expr(self):
-        res = ParseResult()
+    # EXPRESSION
+    def expression(self):
+        result = Result()
 
-        if self.token.matches(T_KEYWORD, self.token.value):
+        # VARIABLE ASSIGNMENT
+        if self.token.is_type(T_KEYWORD, self.token.value):
             keyword = self.token.value
-            res.register_adv(); self.adv()
+            result.reg_adv(); self.adv();
 
             if self.token.type != T_IDENTIFIER:
                 return res.failure(InvalidSyntaxError(
                     self.token.pos_start, self.token.pos_end,
                     "Expected identifier"))
 
-            var_name = self.token
-            res.register_adv(); self.adv()
+            var_ident = self.token
+            result.reg_adv(); self.adv();
 
             if self.token.type != T_EQUAL:
-                return res.failure(InvalidSyntaxError(
+                return result.failure(InvalidSyntaxError(
                     self.token.pos_start, self.token.pos_end,
                     "Expected '='"))
 
-            res.register_adv(); self.adv()
-            expr = res.register(self.expr())
-            if res.error: return res
+            result.reg_adv(); self.adv();
+            expr = result.register(self.expression())
+            if result.error: return result
 
-            return res.success(VarAssignNode(var_name, expr, keyword))
+            return result.success(VarAssignNode(var_ident, expr, keyword))
 
-        node = res.register(self.binary_op(self.term, (T_PLUS, T_MINUS)))
+        node = result.register(self.binary_op(self.term, (T_PLUS, T_MINUS)))
 
-        if res.error:
-            return res.failure(InvalidSyntaxError(
+        # ANYTHING ELSE
+        if result.error:
+            return result.failure(InvalidSyntaxError(
                 self.token.pos_start, self.token.pos_end,
-                "Expected int, float, var, identifier, or operator"))
+                "Expected int, float, keyword, identifier, or operator"))
 
-        return res.success(node)
+        return result.success(node)
 
-    def binary_op(self, func_a, ops, func_b=None):
-        if func_b == None:
+    # BINARY OPERATION
+    def binary_op(self, func_a, operators, func_b=None):
+        if func_b == None: # Only used for factors, not totally sure why?
             func_b = func_a
 
-        res = ParseResult()
-        left = res.register(func_a())
-        if res.error: return res
+        result = Result()
+        left = result.register(func_a())
+        if result.error: return result
 
-        while self.token.type in ops:
+        while self.token.type in operators:
             op_token = self.token
-            res.register_adv(); self.adv()
-            right = res.register(func_b())
-            if res.error: return res
-            else: left = BinaryOpNode(left, op_token, right)
+            result.reg_adv(); self.adv()
+            right = result.register(func_b())
+            if result.error: return result
+            else: left = BinaryOpNode(op_token, left, right)
 
-        return res.success(left)
+        return result.success(left)
