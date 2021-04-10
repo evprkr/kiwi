@@ -1,13 +1,22 @@
 # Kiwi Grammar
 
-comment 		-> // *
+comment 		-> // single line comment
+				 | /* comment block */
+
+program			-> block
+
+block			-> (declare ';')* (statement ';')+
+
+declare			->
+
+statement		-> 
 
 expression 		-> term (('+' | '-') term)*
 
 term 			-> factor (('*' | '/') factor)*
 
 factor 			-> NUMBER | '(' EXP ')'
-				 > egg (POW factor)*
+				 | egg (POW factor)*
 
 egg				-> INT | FLOAT | STRING | IDENTIFIER
-				 > LPAREN expr RPAREN
+				 | LPAREN expr RPAREN

@@ -59,7 +59,7 @@ class Lexer:
             elif self.char == ')': tokens.append(Token(T_RPAREN, pos_start = self.pos)); self.adv()
             elif self.char == '=': tokens.append(Token(T_EQUAL, pos_start = self.pos)); self.adv()
             elif self.char == ';': tokens.append(Token(T_EOL, pos_start = self.pos)); self.adv(eol=True)
-            elif self.char == '/': tokens.append(self.make_comment()); self.adv()
+            elif self.char == '/': tokens.append(self.lex_slash()); self.adv()
             else: return [], IllegalCharError(self.pos.copy(), self.pos , "'" + self.char + "'")
 
         tokens.append(Token(T_EOF, pos_start = self.pos))
@@ -106,7 +106,7 @@ class Lexer:
 
         return Token(token_type, identifier, pos_start, self.pos)
 
-    def make_comment(self):
+    def lex_slash(self):
         pos_copy = self.pos.copy()
         self.adv()
 
@@ -135,6 +135,6 @@ def run(fname, text):
     parser = Parser(tokens)
     ast = parser.parse()
    
-    print(f"AST NODES: {ast.node}") 
+    print(f"NODES: {ast.node}") 
 
     return ast.node, None
